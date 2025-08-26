@@ -1,4 +1,4 @@
 # shopping-list-app
 
-Co tydzień jeżdzę na większe zakupy i co tydzień mam problem, ponieważ nie wiem czego nie ma, a co jest np. w lodówce.
-Postanowiłem więc, że zrobię prostą aplikację, dzięki której w każdej chwili będę mógł dodawać sobie rzeczy, które muszę kupić.
+Prosta aplikacja, która jest listą zakupową.
+Aplikacja pozwala dodawać jak i usuwac produkty z listy.
