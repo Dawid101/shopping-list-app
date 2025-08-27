@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ShoppingListController {
 
@@ -27,13 +26,9 @@ public class ShoppingListController {
         return ResponseEntity.ok(listOfProducts);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteProduct(@RequestBody Product product) {
-        try {
-            productService.deleteProduct(product.getName());
-            return ResponseEntity.ok().body("Product deleted");
-        } catch (NullPointerException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProductById(@PathVariable String id) {
+        productService.deleteProductById(id);
+        return ResponseEntity.ok("Product deleted");
     }
 }

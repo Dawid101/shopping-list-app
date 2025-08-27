@@ -1,6 +1,7 @@
 package com.example.shoppinglist.shopping_list_app.service;
 
 import com.example.shoppinglist.shopping_list_app.domain.Product;
+import com.example.shoppinglist.shopping_list_app.exception.ProductNotFoundException;
 import com.example.shoppinglist.shopping_list_app.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,15 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public void deleteProduct(String name) {
-        productRepository.deleteProductByName(name);
+    public void deleteProductById(String id) {
+        Product product = getProduct(id);
+        if (product != null) {
+            productRepository.deleteById(id);
+        }
+    }
+
+    public Product getProduct(String id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
     }
 }
