@@ -6,6 +6,7 @@ import com.example.shoppinglist.shopping_list_app.dto.ProductDtoResp;
 import com.example.shoppinglist.shopping_list_app.mapper.ProductMapper;
 import com.example.shoppinglist.shopping_list_app.exception.ProductNotFoundException;
 import com.example.shoppinglist.shopping_list_app.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,37 +14,30 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
     public ProductDtoResp addProduct(ProductDtoReq productDtoReq) {
         Product product = productMapper.toEntity(productDtoReq);
-        if (getAllProducts() == null) {
-            product.setPlaceOnTheList(1);
-        } else {
-            product.setPlaceOnTheList(getAllProducts().size() + 1);
-        }
+        Integer maxPosition = productRepository.findMaxPosition();
+        int newPosition = (maxPosition != null) ? maxPosition + 1 : 1;
+        product.setPositionOnTheList(newPosition);
         productRepository.save(product);
         return productMapper.toProductDtoResp(product);
     }
 
     public List<ProductDtoResp> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAllByOrderByPositionOnTheListAsc();
         return productMapper.toProductDtoRespList(products);
     }
 
     public void deleteProductById(String id) {
-        Product product = getProductById(id);
-        if (product != null) {
-            List<Product> products = productRepository.findAll();
-            products.forEach(productOnTheList -> {
-                if(productOnTheList.getPlaceOnTheList() != 1){
-                    productOnTheList.setPlaceOnTheList(productOnTheList.getPlaceOnTheList() - 1);
-                }
-            });
-            productRepository.deleteById(id);
-        }
+        Product productToDelete = getProductById(id);
+        int deletedPosition = productToDelete.getPositionOnTheList();
+        productRepository.deleteById(id);
+        productRepository.decrementPositionsAbove(deletedPosition);
     }
 
     public ProductDtoResp getProductDto(String id) {

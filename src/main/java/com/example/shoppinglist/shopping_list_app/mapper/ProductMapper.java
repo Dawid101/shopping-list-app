@@ -19,13 +19,13 @@ public class ProductMapper {
     public ProductDtoResp toProductDtoResp(Product product) {
         String name;
         int quantity;
-        int placeOnTheList;
+        int positionOnTheList;
 
         name = product.getName();
         quantity = product.getQuantity();
-        placeOnTheList = product.getPlaceOnTheList();
+        positionOnTheList = product.getPositionOnTheList();
 
-        return new ProductDtoResp(name, quantity, placeOnTheList);
+        return new ProductDtoResp(name, quantity, positionOnTheList);
     }
 
     public List<ProductDtoResp> toProductDtoRespList(List<Product> products){
