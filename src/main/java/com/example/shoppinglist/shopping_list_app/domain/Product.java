@@ -21,4 +21,10 @@ public class Product {
     private String name;
     private int quantity;
     private int positionOnTheList;
+
+    public Product(String name, int quantity, int positionOnTheList) {
+        this.name = name;
+        this.quantity = quantity;
+        this.positionOnTheList = positionOnTheList;
+    }
 }
