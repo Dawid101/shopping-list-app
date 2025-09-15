@@ -11,12 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -31,7 +34,7 @@ class ProductServiceTest {
     @Test
     void shouldAddProductThenReturnDto() {
         ProductDtoReq request = new ProductDtoReq("Kawa", 5);
-        Product product = new Product("Kawa", 5,1);
+        Product product = new Product("Kawa", 5, 1);
         ProductDtoResp expectedResponse = new ProductDtoResp("Kawa", 5, 1);
 
         when(productMapper.toEntity(request)).thenReturn(product);
@@ -42,10 +45,64 @@ class ProductServiceTest {
         // When
         ProductDtoResp result = productService.addProduct(request);
 
-        assertEquals(1,result.positionOnTheList());
+        assertEquals(1, result.positionOnTheList());
 
         // Verify że pozycja została ustawiona
         verify(productRepository).save(argThat(p -> p.getPositionOnTheList() == 1));
 
+    }
+
+    @Test
+    void shouldReturnAllDtoResponseProduct() {
+        List<Product> products = Arrays.asList(
+                new Product("kawa", 1, 1),
+                new Product("mleko", 2, 2)
+        );
+        List<ProductDtoResp> expectedResponse = Arrays.asList(
+                new ProductDtoResp("kawa", 1, 1),
+                new ProductDtoResp("mleko", 2, 2)
+        );
+
+        when(productRepository.findAllByOrderByPositionOnTheListAsc()).thenReturn(products);
+        when(productMapper.toProductDtoRespList(any())).thenReturn(expectedResponse);
+
+        List<ProductDtoResp> result = productService.getAllProducts();
+
+        assertEquals(expectedResponse, result);
+        verify(productRepository).findAllByOrderByPositionOnTheListAsc();
+        verify(productMapper).toProductDtoRespList(products);
+    }
+
+    @Test
+    void shouldDeleteProductThenDecrementPosistionAbove() {
+
+        Product product = new Product("1", "Kawa", 1, 1);
+        int deletedPosition = product.getPositionOnTheList();
+
+        when(productRepository.findById("1")).thenReturn(Optional.of(product));
+
+        productService.deleteProductById("1");
+
+
+        verify(productRepository).findById("1");
+        verify(productRepository).deleteById("1");
+        verify(productRepository).decrementPositionsAbove(deletedPosition);
+    }
+
+    @Test
+    void shouldReturnProductDtoResp(){
+        String productId = "1";
+        Product product = new Product(productId, "kawa", 1, 1);
+        ProductDtoResp expectedProductDto = new ProductDtoResp("kawa",1,1);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productMapper.toProductDtoResp(product)).thenReturn(expectedProductDto);
+
+        ProductDtoResp result = productService.getProductDto(productId);
+
+        assertEquals(expectedProductDto,result);
+
+        verify(productRepository).findById(productId);
+        verify(productMapper).toProductDtoResp(product);
     }
 }
