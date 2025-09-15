@@ -14,6 +14,7 @@ API umożliwia dodawanie, przeglądanie i usuwanie produktów z listy zakupów p
 - **H2 Database** (in-memory)
 - **Lombok**
 - **Maven**
+- **JUnit5**
 
 ## 🏃‍♂️ Uruchamianie
 
@@ -153,8 +154,7 @@ curl http://localhost:8080/list
 ## 🔮 Planowane funkcjonalności
 
 - [ ] Walidacja danych wejściowych
-- [ ] Dokumentacja Swagger/OpenAPI
-- [ ] Testy jednostkowe
-- ✅ Zmiana pozycji produktów na liście
+- [X] Testy jednostkowe
+- [x] Zmiana pozycji produktów na liście
 - [ ] Edytowanie produktów
 - [ ] Kategorie produktów
